@@ -4,24 +4,38 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLANTILLA DE BOOTSTRAP CON JQUERY</title>
+    <title>::Gotta Catch'em All::</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <style>
         .img{
-            border: dodgerblue 1px dashed;
+            border: lightgray 1px solid;
         }
 
         h1{
             text-align: center;
         }
+        
+        #toast-container>.toast-info {
+            background-image: none!important;
+        }
+
+        .toast-info {
+            background-color: #59F147;
+        }
+
+        .img:hover{
+	        background-color: lightgray;
+        }
+
     </style>
 
 </head>
 <body>
     
-    <h1 id="titulo align-content-center">65 random Pokemon Figures</h1>
+    <h1 class="titulo align-content-center">65 random Pokemon Figures - Gotta Catch'em All</h1>
     <div class="pokemon">
     </div>
 
@@ -34,8 +48,19 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
+
+        toastr.options = {
+        "closeButton": true,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        
+        }
+
         // TU CODIGO:
         let arr=[];
         let i=1;
@@ -43,11 +68,33 @@
             x = Math.floor((Math.random()*867))+1;
             if(!arr.includes(x)){
             /*$('.pokemon').append("<img src=https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+x+".png>");*/
-            $('.pokemon').append(`<img class="img" src=https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${x}.png>`);
+            $('.pokemon').append(`<img nmro_pokemon="${x}" class="img" src=https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${x}.png>`);
             i++;
             arr.push(x);
             }
         }
+
+        $(document).on("click","img",function(){
+            let id = $(this).attr("nmro_pokemon");
+            
+            $.get(`https://pokeapi.co/api/v2/pokemon/${id}/`, function(res) {
+                let hei = res.height;
+                let wei = res.weight;
+                let name = res.name;
+                let fig = res.sprites.front_default;
+                let classif = "<ul>"
+
+                for(type of res.types){
+                    console.log(type.type.name);
+                    classif += "<li>"+type.type.name+"</li>"; 
+                } 
+                classif += "</ul>";
+                console.log(type)
+            toastr.info(`<div class="container"><h2 style="text-align: center">${name}</h2><img src=${fig} width="70%"><h6>Types</h6>${classif}<h6>Height</h6><p>${hei}</p><h6>Weight</h6><p>${wei}</p></div>`);
+        }, "json");
+
+
+        });
         /*for(let i=0; i<=151; i++){
             console.log("<img src=https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+i+"png>");
             $('.pokemon').append("<img src=https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+i+".png>");
